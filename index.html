@@ -3,30 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Period Tracker</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Pregnancy Tracker</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fce4ec;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            color: #333;
+        }
+
+        header {
+            background-color: #f06292;
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            width: 90%;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input, button {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #f06292;
+            color: white;
+            cursor: pointer;
+            border: none;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #ec407a;
+        }
+
+        h3 {
+            font-size: 20px;
+            color: #ec407a;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .weekly-progress, .reminder, .weekly-tips, .nutritional-food, .exercise-suggestions {
+            margin-top: 30px;
+            background-color: #f8bbd0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .weekly-progress h4, .reminder h4, .weekly-tips h4, .nutritional-food h4, .exercise-suggestions h4 {
+            margin-bottom: 10px;
+        }
+
+        .weekly-tips p, .nutritional-food p, .exercise-suggestions p {
+            font-size: 16px;
+        }
+
+        .reminder input {
+            width: 70%;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Period Tracker</h1>
-        <form id="periodForm">
-            <label for="start_date">Start Date:</label>
-            <input type="date" id="start_date" name="start_date" required>
-            
-            <label for="cycle_length">Cycle Length (days):</label>
-            <input type="number" id="cycle_length" name="cycle_length" required>
-            
-            <label for="period_length">Period Length (days):</label>
-            <input type="number" id="period_length" name="period_length" required>
-            
-            <button type="submit">Submit</button>
-        </form>
 
-        <div id="trackerResults">
-            <!-- Results will be displayed here -->
-        </div>
+    <header>
+        Pregnancy Tracker
+    </header>
+
+    <div class="container">
+        <h2>Track Your Pregnancy</h2>
+        <p>Enter the date of your last period to calculate your estimated due date.</p>
+        <form>
+            <input type="date" id="lastPeriod" required>
+            <button type="button" onclick="calculateDueDate()">Calculate Due Date</button>
+        </form>
+        <h3 id="result"></h3>
     </div>
 
-    <script src="script.js"></script>
+    <div class="weekly-progress">
+        <h4>Current Pregnancy Week</h4>
+        <p id="currentWeek">Please enter your last period date to see the progress.</p>
+    </div>
+
+    <div class="weekly-tips">
+        <h4>Weekly Tips</h4>
+        <p id="weeklyTips">Enter your last period date to get tips for your pregnancy week.</p>
+    </div>
+
+    <div class="nutritional-food">
+        <h4>Nutritional Food Suggestions</h4>
+        <p id="foodSuggestions">Enter your last period date to see nutritional food suggestions.</p>
+    </div>
+
+    <div class="exercise-suggestions">
+        <h4>Exercise Recommendations</h4>
+        <p id="exerciseSuggestions">Enter your last period date to see safe exercises for your pregnancy.</p>
+    </div>
+
+    <div class="reminder">
+        <h4>Set a Pregnancy Reminder</h4>
+        <input type="text" id="reminderText" placeholder="Enter reminder...">
+        <button type="button" onclick="setReminder()">Set Reminder</button>
+        <p id="reminderResult"></p>
+    </div>
+
+    <footer>
+        © 2025 Pregnancy Tracker | All rights reserved
+    </footer>
+
+    <script>
+        const tips = [
+            "Week 1-4: Your body is preparing for pregnancy. Take folic acid and start a healthy diet!",
+            "Week 5-8: Morning sickness may begin. Stay hydrated and eat small, frequent meals.",
+            "Week 9-12: Your baby’s organs are developing. Keep taking prenatal vitamins and get enough sleep.",
+            "Week 13-16: You may begin to feel less tired. Exercise and keep up with a balanced diet.",
+            "Week 17-20: Your baby is growing, and you may feel movement. Consider talking to your doctor about ultrasounds.",
+            "Week 21-24: You’re nearing the halfway point! Monitor weight gain and enjoy being active.",
+            "Week 25-28: Your baby’s brain and lungs are developing. Get plenty of rest and stay active.",
+            "Week 29-32: You’re entering the final stretch! Stay comfortable and monitor any unusual symptoms.",
+            "Week 33-36: The baby’s weight is increasing. Stay hydrated and take short naps.",
+            "Week 37-40: Almost there! Prepare for labor, and be ready for your baby’s arrival."
+        ];
+
+        const foodSuggestions = [
+            "Week 1-4: Foods rich in folic acid, such as spinach, broccoli, and citrus fruits, are essential for early pregnancy.",
+            "Week 5-8: Include ginger tea to help with nausea. Also, try eating bananas, crackers, and salty snacks to combat morning sickness.",
+            "Week 9-12: Focus on foods high in protein, such as lean meats, eggs, and beans. Don't forget to hydrate!",
+            "Week 13-16: Include whole grains, dairy products, and healthy fats in your diet for balanced nutrition.",
+            "Week 17-20: Iron-rich foods like lean meats, beans, and fortified cereals are important now.",
+            "Week 21-24: Include calcium-rich foods like milk, yogurt, and cheese to support bone development.",
+            "Week 25-28: Continue focusing on protein and calcium-rich foods. Consider adding avocado for healthy fats.",
+            "Week 29-32: Maintain a balanced diet with a focus on fiber-rich foods like vegetables and whole grains.",
+            "Week 33-36: Keep your energy up with snacks like nuts, fruit, and whole grain crackers.",
+            "Week 37-40: Focus on maintaining hydration and keeping your diet rich in fiber to prevent constipation."
+        ];
+
+        const exerciseSuggestions = [
+            "Week 1-4: Gentle walking and light stretching can help. Avoid high-impact exercises.",
+            "Week 5-8: Try pelvic tilts and light prenatal yoga to ease discomfort and maintain flexibility.",
+            "Week 9-12: Walking, swimming, and low-impact aerobics are great for cardiovascular health.",
+            "Week 13-16: Begin doing squats, lunges, and arm exercises to strengthen muscles and improve posture.",
+            "Week 17-20: Prenatal yoga and gentle swimming are ideal for keeping you active and relaxed.",
+            "Week 21-24: Focus on low-impact exercises like cycling or walking, and avoid heavy lifting.",
+            "Week 25-28: Swimming and water aerobics can help with swelling and support your body.",
+            "Week 29-32: Light strength training with resistance bands and gentle stretching can help you stay strong.",
+            "Week 33-36: Focus on relaxation and deep breathing exercises to help prepare your body for labor.",
+            "Week 37-40: Continue walking, stretching, and relaxation exercises to stay flexible and prepare for childbirth."
+        ];
+
+        function calculateDueDate() {
+            let lastPeriod = document.getElementById("lastPeriod").value;
+            if (!lastPeriod) {
+                alert("Please select a date.");
+                return;
+            }
+
+            let lastPeriodDate = new Date(lastPeriod);
+            let dueDate = new Date(lastPeriodDate);
+            dueDate.setDate(dueDate.getDate() + 280); 
+
+            document.getElementById("result").innerHTML = "Date: " + dueDate.toDateString();
+
+            
+            let today = new Date();
+            let daysPregnant = Math.floor((today - lastPeriodDate) / (1000 * 60 * 60 * 24));
+            let pregnancyWeek = Math.floor(daysPregnant / 7) + 1;
+
+            document.getElementById("currentWeek").innerHTML = "You are in Week " + pregnancyWeek + " of your pregnancy.";
+
+            
+            if (pregnancyWeek <= 40) {
+                document.getElementById("weeklyTips").innerHTML = tips[pregnancyWeek - 1];
+                document.getElementById("foodSuggestions").innerHTML = foodSuggestions[pregnancyWeek - 1];
+                document.getElementById("exerciseSuggestions").innerHTML = exerciseSuggestions[pregnancyWeek - 1];
+            } else {
+                document.getElementById("weeklyTips").innerHTML = "Congratulations! Your baby is due soon.";
+                document.getElementById("foodSuggestions").innerHTML = "Continue to maintain a healthy, balanced diet as your due date approaches.";
+                document.getElementById("exerciseSuggestions").innerHTML = "Focus on relaxation exercises and prepare for labor.";
+            }
+        }
+
+        function setReminder() {
+            let reminderText = document.getElementById("reminderText").value;
+            if (reminderText) {
+                document.getElementById("reminderResult").innerHTML = "Reminder Set: " + reminderText;
+                document.getElementById("reminderText").value = '';  
+            } else {
+                alert("Please enter a reminder.");
+            }
+        }
+    </script>
+
 </body>
 </html>
